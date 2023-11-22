@@ -183,13 +183,14 @@ catch(error){
 const forgotpassword= async(req,res)=>{
   try{  
     const {Email} = req.body; 
-    //console.log(Email);
+   // console.log(Email);
     const {error} = schemaauth.forgetpassword.validate(req.body);
     if (error) {
         return res.status(400).json({ error: error.details[0].message });
       }
       else{
      var data = await user.findOne({where :{Email:Email}})
+     
     if(data){
     let Email = data.Email;
     let mailsubject = 'forget password';
@@ -197,6 +198,7 @@ const forgotpassword= async(req,res)=>{
     let content = '<p> heyy, ' +data.UserName+ '\
     please <a href = "http://localhost:4400/reset-password?token='+token+'"> Click Here </a> To Reset Password';
     sendmail.sendEmail(Email,mailsubject,content)
+    console.log("token is:", token)
     const deleteuser = await password_reset.destroy({where:{Email:Email}})
     const result = await password_reset.create({Email,token})
     res.status(200).send({sucess:"true",message:"mail send successfully for reset password..."})
@@ -218,6 +220,7 @@ const resetpassword = async (req,res)=>{
       const result = await password_reset.findOne({where:{Token:token}}) 
       let resultLength = 0;
       resultLength = Object.keys(result).length;
+      console.log("result length is:",resultLength)
       if(resultLength > 0 ){                //if token exist than find from that and check that token is correct or not
         const data = await password_reset.findOne({where:{Email:result.Email}})
           res.render('reset-password',{user:data})
@@ -227,12 +230,14 @@ const resetpassword = async (req,res)=>{
     }else{
       res.render('404')
     }
+    console.log("password is:",req.body.Password);
   }catch(error){
     console.log(error);
   }
 }
 
 const resetpassworduser = async (req,res)=>{
+  
   if(req.body.Password  != req.body.confirm_Password){
     res.render('reset-password',{error_message:"Password Not Match..",user:{id:req.body.user_id,Email:req.body.email}})   //pass user value 
   }else{

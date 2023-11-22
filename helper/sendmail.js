@@ -1,6 +1,6 @@
 //send email
 const nodemailer = require("nodemailer");
-const {SMTP_MAIL,SMTP_PASSWORD } = process.env
+const {MAILADDRESS,MAILPASSWORD } = process.env
 const sendEmail = async(email,mailsubject,content)=>{
 try{
      const transport = nodemailer.createTransport({
@@ -9,8 +9,8 @@ try{
         secure : false,
         requireTLS:true,
         auth:{
-            user:SMTP_MAIL,
-            pass:SMTP_PASSWORD
+            user:MAILADDRESS,
+            pass:MAILPASSWORD
         }
     });
     const mailoption = {
